@@ -8,7 +8,7 @@
 #include "Eigen/Dense"
 
 
-class ground_truth_package {
+class Ground_truth_package {
 public:
     long long timestamp_;
 

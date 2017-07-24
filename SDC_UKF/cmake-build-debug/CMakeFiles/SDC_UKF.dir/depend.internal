@@ -616,4 +616,8 @@ CMakeFiles/SDC_UKF.dir/src/main.cpp.o
  /home/nick/study/udacity-sdc/Term2/SDC-TERM2/SDC_UKF/src/Eigen/src/plugins/CommonCwiseUnaryOps.h
  /home/nick/study/udacity-sdc/Term2/SDC-TERM2/SDC_UKF/src/Eigen/src/plugins/MatrixCwiseBinaryOps.h
  /home/nick/study/udacity-sdc/Term2/SDC-TERM2/SDC_UKF/src/Eigen/src/plugins/MatrixCwiseUnaryOps.h
+ /home/nick/study/udacity-sdc/Term2/SDC-TERM2/SDC_UKF/src/MeasurementPackage.h
+ /home/nick/study/udacity-sdc/Term2/SDC-TERM2/SDC_UKF/src/Tools.h
+ /home/nick/study/udacity-sdc/Term2/SDC-TERM2/SDC_UKF/src/UKF.h
+ /home/nick/study/udacity-sdc/Term2/SDC-TERM2/SDC_UKF/src/ground_truth_package.h
  /home/nick/study/udacity-sdc/Term2/SDC-TERM2/SDC_UKF/src/main.cpp

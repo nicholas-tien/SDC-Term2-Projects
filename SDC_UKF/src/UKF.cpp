@@ -45,7 +45,7 @@ using std::vector;
         n_aug_ = n_x_ + 2;
 
         //Process noise standard deviation longitudinal acceleration in m/s^2
-        std_a_ = 0.55;    // Need tuning (ninety-fity percent of the time)
+        std_a_ = 0.5;    // Need tuning (ninety-fity percent of the time)
 
         // Process noise standard deviation yaw acceleration in rad/s^2
         std_yawdd_ = 0.55; // Need tuning (ninety-five percent of the time)
@@ -94,7 +94,7 @@ using std::vector;
 
         H_laser_ = MatrixXd(2,n_x_);
         H_laser_ << 1, 0, 0, 0, 0,
-                   0, 1, 0, 0, 0;
+                    0, 1, 0, 0, 0;
 
 
     }
@@ -106,7 +106,7 @@ using std::vector;
         if (!is_initialized_){
             if (meas_package.sensor_type_ == MeasurementPackage::LASER){
                 x_ << meas_package.raw_measurement_[0],meas_package.raw_measurement_[1],0,0,0;
-            } else if (meas_package.sensor_type_ == MeasurementPackage::LASER){
+            } else if (meas_package.sensor_type_ == MeasurementPackage::RADAR){
                 double rho = meas_package.raw_measurement_[0];
                 double phi = meas_package.raw_measurement_[1];
                 double  rho_dot = meas_package.raw_measurement_[2];
@@ -120,6 +120,9 @@ using std::vector;
             }
             previous_timestamp_ = meas_package.timestamp_;
             is_initialized_ = true;
+
+            // not ready to prosess,must return to prosess next
+            return;
         }
 
         double  dt = (meas_package.timestamp_ - previous_timestamp_) / 1000000.0;
@@ -149,9 +152,12 @@ using std::vector;
         //create augmented state covariance
         MatrixXd P_aug = MatrixXd(n_aug_,n_aug_);
         P_aug.fill(0.0);
-        P_aug.topLeftCorner(n_x_,n_x_);
+        P_aug.topLeftCorner(n_x_,n_x_) = P_;
         P_aug(n_x_,n_x_) = pow(std_a_,2);
         P_aug(n_x_ + 1,n_x_ + 1) = pow(std_yawdd_,2);
+
+        //for debug
+        //cout << "P_aug" << P_aug << endl;
 
         //create square root matrix
         MatrixXd A = P_aug.llt().matrixL();
@@ -164,7 +170,7 @@ using std::vector;
         //create augmented sigma points
         Xsig_aug.col(0) = x_aug;
         MatrixXd term = sqrt(lambda_ + n_aug_) * A;
-        for (int i = 1; i < n_aug_ ; ++i) {
+        for (int i = 0; i < n_aug_ ; ++i) {
             Xsig_aug.col(i + 1) = x_aug +term.col(i);
             Xsig_aug.col(i + n_aug_ + 1) = x_aug - term.col(i);
 
@@ -176,10 +182,10 @@ using std::vector;
 
     MatrixXd UKF::predictSigmaPoints(MatrixXd Xsig_aug, double delta_t) {
         MatrixXd predictions(n_x_, 2 * n_aug_ + 1);
-        for (int i = 0; i < n_aug_; ++i) {
+        for (int i = 0; i < 2 * n_aug_ + 1; ++i) {
             predictions.col(i) = Xsig_aug.col(i).head(n_x_) + calculate_transition(Xsig_aug.col(i), delta_t);
-
         }
+        return predictions;
     }
 
     VectorXd UKF::calculate_transition(VectorXd sigma_points, double delta_t) {
@@ -201,8 +207,8 @@ using std::vector;
         process_noise(3) = 1/2.0 * delta_t * delta_t * yaw_rate_acceleration;
         process_noise(4) = yaw_rate_acceleration * delta_t;
 
-        if (psi_dot != 0){
-            transition(0) = (v/float(psi_dot) * (sin(psi * psi_dot * delta_t) - sin(psi)));
+        if (psi_dot != 0) {
+            transition(0) = (v/float(psi_dot) * (sin(psi + psi_dot * delta_t) - sin(psi)));
             transition(1) = (v/float(psi_dot) * (-cos(psi + psi_dot * delta_t) + cos(psi)));
             transition(2) = 0;
             transition(3) = psi_dot * delta_t;
@@ -230,19 +236,22 @@ using std::vector;
         MatrixXd P = MatrixXd(n_x_,n_x_);
         P.fill(0.0);
 
+        //for debug
+        //cout << "Xsig_pred_: " << Xsig_pred_ << endl;
+
         //predicted state mean
-        for (int i = 0; i < 2 * n_aug_ + 1 ; ++i) {
+        for (int i = 0; i < Xsig_pred_.cols(); ++i) {
             x = x + weights_(i) * Xsig_pred_.col(i);
         }
 
         //predicted state covariace matrix
-        for (int j = 0; j < 2 * n_aug_ + 1; ++j) {
+        for (int j = 0; j < Xsig_pred_.cols(); ++j) {
             //state difference
             VectorXd x_diff = Xsig_pred_.col(j) - x;
 
             //angel normalization
             while (x_diff(3) > M_PI) x_diff(3) -= 2.0 * M_PI;
-            while (x_diff(3) < M_PI) x_diff(3) += 2.0 * M_PI;
+            while (x_diff(3) < -M_PI) x_diff(3) += 2.0 * M_PI;
 
             P = P + weights_(j) * x_diff * x_diff.transpose();
         }
@@ -250,6 +259,8 @@ using std::vector;
         //write result
         x_ = x;
         P_ = P;
+
+    //    cout << "x_ and P_" << x_ << endl << P_ << endl;
     }
 
     void UKF::Prediction(double delta_t) {
@@ -289,9 +300,14 @@ using std::vector;
 
         //new estimate
         x_ = x_ + (K * y);
-        long x_size = x_.size();
+        long x_size = x_.rows();
         MatrixXd I = MatrixXd::Identity(x_size,x_size);
         P_ = (I - K * H_laser_) * P_;
+
+        NIS_laser_ = y.transpose() * Si * y;
+
+        //DEBUG
+        //cout << "x_ and P_" << x_ << endl << P_ << endl;
     }
 
 
@@ -352,7 +368,7 @@ using std::vector;
 
         //check Phi
         while (diff(1) > M_PI) diff(1) -= 2.0*M_PI;
-        while (diff(1) < M_PI) diff(1) += 2.0*M_PI;
+        while (diff(1) < -M_PI) diff(1) += 2.0*M_PI;
 
         S += weights_(k) * (diff * diff.transpose());
     }
@@ -365,13 +381,13 @@ using std::vector;
 
         //check diff(3) psi angle
         while (diff_x(3) > M_PI) diff_x(3) -= 2.0 * M_PI;
-        while (diff_x(3) < M_PI) diff_x(3) += 2.0 * M_PI;
+        while (diff_x(3) < -M_PI) diff_x(3) += 2.0 * M_PI;
 
         VectorXd diff_z = Zsig.col(i) - z_pred;
 
         //check diff_z(1) phi angle
         while (diff_z(1) > M_PI) diff_z(1) -= 2.0 * M_PI;
-        while (diff_z(1) < M_PI) diff_z(1) += 2.0 * M_PI;
+        while (diff_z(1) < -M_PI) diff_z(1) += 2.0 * M_PI;
 
         Tc += weights_(i) * (diff_x * diff_z.transpose());
     }
@@ -386,13 +402,16 @@ using std::vector;
 
     //angle normalization
     while (z_diff(1) > M_PI) z_diff(1) -= 2.0 * M_PI;
-    while (z_diff(1) < M_PI) z_diff(1) += 2.0 * M_PI;
+    while (z_diff(1) < -M_PI) z_diff(1) += 2.0 * M_PI;
 
     //Update state mean and covariance matrix
     x_ = x_ + K * z_diff;
     P_ = P_ - K * S * K.transpose();
 
     NIS_radar_ = z_diff.transpose() * S.transpose() * z_diff;
+
+    //DEBUG
+    //cout << "x_ and P_" << x_ << endl << P_ << endl;
 
 }
 
