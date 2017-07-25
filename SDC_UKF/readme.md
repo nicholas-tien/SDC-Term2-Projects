@@ -11,7 +11,7 @@ Self-driving-car project
  | vy  |  0.581772 |
 
  ### Eestimated x-y
-![estimated x-y](cmake-build-debug/result.png)
+![estimated x-y](cmake-build-debug/result.png {width=400px height=400px})
 
  ### Dependencies
   * cmake >= v3.5
