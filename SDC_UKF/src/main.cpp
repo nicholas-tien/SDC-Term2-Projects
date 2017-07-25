@@ -215,7 +215,7 @@ int main(int argc,char * argv[]) {
 
     //compute the accuracy (RMSE)
     Tools tools;
-    cout << "Accuracy - RMSE: " << endl << tools.calculateRMSE(estimations,ground_truth);
+    cout << "Accuracy - RMSE: " << endl << tools.calculateRMSE(estimations,ground_truth) << endl;
 
     //close file
     if (out_file_.is_open()) {

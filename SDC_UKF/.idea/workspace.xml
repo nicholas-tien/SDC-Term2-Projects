@@ -36,8 +36,8 @@
       <file leaf-file-name="main.cpp" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="144">
-              <caret line="154" column="21" lean-forward="true" selection-start-line="154" selection-start-column="21" selection-end-line="154" selection-end-column="21" />
+            <state relative-caret-position="164">
+              <caret line="215" column="33" lean-forward="true" selection-start-line="215" selection-start-column="33" selection-end-line="215" selection-end-column="33" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
               </folding>
@@ -133,8 +133,8 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="421" />
-    <option name="y" value="40" />
+    <option name="x" value="271" />
+    <option name="y" value="60" />
     <option name="width" value="1337" />
     <option name="height" value="987" />
   </component>
@@ -409,15 +409,15 @@
       <option name="presentableId" value="Default" />
       <updated>1500395761537</updated>
       <workItem from="1500395762875" duration="7819000" />
-      <workItem from="1500557535492" duration="59086000" />
+      <workItem from="1500557535492" duration="60361000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="66905000" />
+    <option name="totallyTimeSpent" value="68180000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="421" y="40" width="1337" height="987" extended-state="0" />
+    <frame x="271" y="60" width="1337" height="987" extended-state="1" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.10022438" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -732,10 +732,18 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/readme.md">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/main.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="144">
-          <caret line="154" column="21" lean-forward="true" selection-start-line="154" selection-start-column="21" selection-end-line="154" selection-end-column="21" />
+        <state relative-caret-position="164">
+          <caret line="215" column="33" lean-forward="true" selection-start-line="215" selection-start-column="33" selection-end-line="215" selection-end-column="33" />
           <folding>
             <element signature="e#0#19#0" expanded="true" />
           </folding>
