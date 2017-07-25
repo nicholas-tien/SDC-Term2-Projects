@@ -159,7 +159,7 @@ int main(int argc,char * argv[]) {
         ukf.ProcessMeasurement(measurement_pack_list[k]);
 
         //DEBUG
-        cout << "x_" << endl << ukf.x_ << endl;
+        //cout << "x_" << endl << ukf.x_ << endl;
 
         //output the estimation
         out_file_ << ukf.x_(0) << "\t";
